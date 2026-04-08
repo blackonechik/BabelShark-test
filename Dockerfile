@@ -13,6 +13,9 @@ RUN apt-get update \
 RUN curl https://install.meteor.com/?release=3.4 | sh
 
 ENV PATH="/root/.meteor:${PATH}"
+ENV CI=true
+ENV METEOR_DISABLE_OPTIMISTIC_CACHING=1
+ENV METEOR_ALLOW_SUPERUSER=true
 
 WORKDIR /app
 
@@ -21,7 +24,8 @@ RUN npm ci
 
 COPY . .
 
-RUN meteor build --directory /opt/build --server-only --allow-superuser
+RUN meteor build --directory /opt/build --server-only --allow-superuser > /tmp/meteor-build.log 2>&1 \
+  || (cat /tmp/meteor-build.log && exit 1)
 RUN cd /opt/build/bundle/programs/server && npm install --production
 
 FROM node:22-bookworm-slim AS runtime
@@ -34,11 +38,10 @@ RUN apt-get update \
 WORKDIR /app
 
 COPY --from=builder /opt/build/bundle /app/bundle
-COPY settings.docker.json /app/settings.docker.json
 
 ENV PORT=3000
 ENV NODE_ENV=production
 
 EXPOSE 3000
 
-CMD ["sh", "-lc", "export METEOR_SETTINGS=\"$(cat /app/settings.docker.json)\" && exec node /app/bundle/main.js"]
+CMD ["node", "/app/bundle/main.js"]

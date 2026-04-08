@@ -39,9 +39,17 @@ export const getDemoAutoChangesSettings = (): DemoAutoChangesSettings => {
     }
   ).demo?.autoChanges ?? {};
 
+  const enabledFromEnv = process.env.DEMO_AUTO_CHANGES_ENABLED;
+
   return {
-    enabled: Boolean(settings.enabled ?? false),
-    intervalMs: coerceNumber(settings.intervalMs, 4000),
+    enabled:
+      enabledFromEnv == null
+        ? Boolean(settings.enabled ?? false)
+        : ["1", "true", "yes", "on"].includes(enabledFromEnv.toLowerCase()),
+    intervalMs: coerceNumber(
+      settings.intervalMs ?? process.env.DEMO_AUTO_CHANGES_INTERVAL_MS,
+      4000,
+    ),
   };
 };
 
