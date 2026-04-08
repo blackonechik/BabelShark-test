@@ -6,5 +6,11 @@
     "password": "secret",
     "database": "babelshark_test",
     "serverId": 1
+  },
+  "demo": {
+    "autoChanges": {
+      "enabled": false,
+      "intervalMs": 4000
+    }
   }
 }

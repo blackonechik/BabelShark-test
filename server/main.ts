@@ -1,6 +1,7 @@
 import "reflect-metadata";
 import { Mongo } from "meteor/mongo";
 import { Meteor } from "meteor/meteor";
+import { registerDemoAutoChanges } from "@/app/server/lib/register-demo-auto-changes";
 import { registerCustomersPublication } from "@/app/server/lib/register-customers-publication";
 import { registerTranslatePositionMethod } from "@/app/server/lib/register-translate-position-method";
 import { getMysqlSettings } from "@/app/server/model/mysql";
@@ -13,6 +14,7 @@ Mongo.setConnectionOptions({
 Meteor.startup(() => {
   registerCustomersPublication();
   registerTranslatePositionMethod();
+  registerDemoAutoChanges();
 
   if (!getMysqlSettings()) {
     console.warn(

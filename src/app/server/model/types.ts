@@ -6,3 +6,8 @@ export interface MysqlSettings {
   database: string;
   serverId: number;
 }
+
+export interface DemoAutoChangesSettings {
+  enabled: boolean;
+  intervalMs: number;
+}

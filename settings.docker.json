@@ -7,6 +7,12 @@
     "database": "babelshark_test",
     "serverId": 1
   },
+  "demo": {
+    "autoChanges": {
+      "enabled": true,
+      "intervalMs": 4000
+    }
+  },
   "packages": {
     "mongo": {
       "options": {

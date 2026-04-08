@@ -1,8 +1,9 @@
 import { Meteor } from "meteor/meteor";
 import { LiveMysql } from "meteor/vlasky:mysql";
+import { createPool, type Pool } from "mysql2/promise";
 import type { DataSourceOptions } from "typeorm";
 import { coerceNumber } from "../lib/coerce-number";
-import type { MysqlSettings } from "./types";
+import type { DemoAutoChangesSettings, MysqlSettings } from "./types";
 
 export const getMysqlSettings = (): MysqlSettings | null => {
   const settings = (Meteor.settings as { mysql?: Partial<MysqlSettings> }).mysql ?? {};
@@ -31,7 +32,21 @@ export const getMysqlSettings = (): MysqlSettings | null => {
   };
 };
 
+export const getDemoAutoChangesSettings = (): DemoAutoChangesSettings => {
+  const settings = (
+    Meteor.settings as {
+      demo?: { autoChanges?: Partial<DemoAutoChangesSettings> };
+    }
+  ).demo?.autoChanges ?? {};
+
+  return {
+    enabled: Boolean(settings.enabled ?? false),
+    intervalMs: coerceNumber(settings.intervalMs, 4000),
+  };
+};
+
 let liveMysqlInstance: LiveMysql | null = null;
+let mysqlPoolInstance: Pool | null = null;
 
 export const getLiveMysql = (): LiveMysql | null => {
   if (liveMysqlInstance) {
@@ -65,4 +80,28 @@ export const getTypeOrmOptions = (): DataSourceOptions | null => {
     synchronize: false,
     logging: false,
   };
+};
+
+export const getMysqlPool = (): Pool | null => {
+  if (mysqlPoolInstance) {
+    return mysqlPoolInstance;
+  }
+
+  const settings = getMysqlSettings();
+
+  if (!settings) {
+    return null;
+  }
+
+  mysqlPoolInstance = createPool({
+    host: settings.host,
+    port: settings.port,
+    user: settings.user,
+    password: settings.password,
+    database: settings.database,
+    waitForConnections: true,
+    connectionLimit: 10,
+  });
+
+  return mysqlPoolInstance;
 };
