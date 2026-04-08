@@ -1,4 +1,5 @@
 const { defineConfig } = require("@meteorjs/rspack");
+const path = require("path");
 
 /**
  * Rspack configuration for Meteor projects.
@@ -12,6 +13,11 @@ const { defineConfig } = require("@meteorjs/rspack");
  */
 module.exports = defineConfig((Meteor) => {
   return {
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "src"),
+      },
+    },
     module: {
       rules: [
         // Add support for importing SVGs as React components

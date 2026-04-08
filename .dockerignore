@@ -1,0 +1,8 @@
+.git
+.meteor/local
+_build
+node_modules
+npm-debug.log
+Dockerfile*
+docker-compose*.yml
+public/build-chunks
