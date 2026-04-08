@@ -24,8 +24,7 @@ RUN npm ci
 
 COPY . .
 
-RUN meteor build --directory /opt/build --server-only --allow-superuser > /tmp/meteor-build.log 2>&1 \
-  || (cat /tmp/meteor-build.log && exit 1)
+RUN bash -lc 'set -o pipefail && meteor build --directory /opt/build --server-only --allow-superuser 2>&1 | tee /tmp/meteor-build.log'
 RUN cd /opt/build/bundle/programs/server && npm install --production
 
 FROM node:22-bookworm-slim AS runtime
