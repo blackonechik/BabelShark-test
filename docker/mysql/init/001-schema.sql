@@ -47,3 +47,7 @@ VALUES
   ('operator', 'оператор')
 ON DUPLICATE KEY UPDATE
   translated_text = VALUES(translated_text);
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON babelshark_test.* TO 'meteor'@'%';
+GRANT REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO 'meteor'@'%';
+FLUSH PRIVILEGES;

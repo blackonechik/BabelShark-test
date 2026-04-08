@@ -1,8 +1,14 @@
 import "reflect-metadata";
+import { Mongo } from "meteor/mongo";
 import { Meteor } from "meteor/meteor";
 import { registerCustomersPublication } from "@/app/server/lib/register-customers-publication";
 import { registerTranslatePositionMethod } from "@/app/server/lib/register-translate-position-method";
 import { getMysqlSettings } from "@/app/server/model/mysql";
+
+Mongo.setConnectionOptions({
+  ssl: false,
+  tls: false,
+});
 
 Meteor.startup(() => {
   registerCustomersPublication();

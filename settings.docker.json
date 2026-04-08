@@ -1,0 +1,20 @@
+{
+  "mysql": {
+    "host": "mysql",
+    "port": 3306,
+    "user": "meteor",
+    "password": "meteor",
+    "database": "babelshark_test",
+    "serverId": 1
+  },
+  "packages": {
+    "mongo": {
+      "options": {
+        "ssl": true,
+        "tlsCAFile": "/tls/ca.crt",
+        "tlsCertificateKeyFile": "/tls/client.pem",
+        "tlsAllowInvalidCertificates": false
+      }
+    }
+  }
+}
