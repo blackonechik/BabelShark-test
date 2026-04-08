@@ -45,7 +45,16 @@ const selectCustomers = async (pool: Pool): Promise<CustomerRow[]> => {
   return rows;
 };
 
-const pickNextPositionId = (
+const pickRandomItem = <T>(items: readonly T[]): T | null => {
+  if (!items.length) {
+    return null;
+  }
+
+  const randomIndex = Math.floor(Math.random() * items.length);
+  return items[randomIndex] ?? null;
+};
+
+const pickRandomPositionId = (
   positions: readonly PositionRow[],
   currentPositionId: number,
 ): number | null => {
@@ -53,14 +62,11 @@ const pickNextPositionId = (
     return null;
   }
 
-  const currentIndex = positions.findIndex(
-    (position) => position.id === currentPositionId,
+  const availablePositions = positions.filter(
+    (position) => position.id !== currentPositionId,
   );
-  const nextIndex = currentIndex >= 0
-    ? (currentIndex + 1) % positions.length
-    : 0;
 
-  return positions[nextIndex]?.id ?? null;
+  return pickRandomItem(availablePositions)?.id ?? null;
 };
 
 const buildDemoCustomerName = (): string => {
@@ -113,7 +119,7 @@ const runDemoChange = async (pool: Pool): Promise<void> => {
     }
   }
 
-  const customerToUpdate = customers[(tickCount - 1) % Math.max(customers.length, 1)];
+  const customerToUpdate = pickRandomItem(customers);
 
   if (!customerToUpdate) {
     await pool.execute(
@@ -123,7 +129,7 @@ const runDemoChange = async (pool: Pool): Promise<void> => {
     return;
   }
 
-  const nextPositionId = pickNextPositionId(
+  const nextPositionId = pickRandomPositionId(
     positions,
     customerToUpdate.position_id,
   );
@@ -133,8 +139,8 @@ const runDemoChange = async (pool: Pool): Promise<void> => {
   }
 
   await pool.execute(
-    "UPDATE customers SET position_id = ? WHERE id = ?",
-    [nextPositionId, customerToUpdate.id],
+    "UPDATE customers SET full_name = ?, position_id = ? WHERE id = ?",
+    [buildDemoCustomerName(), nextPositionId, customerToUpdate.id],
   );
 };
 
